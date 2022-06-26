@@ -18,7 +18,7 @@ import { OrbitControls } from './examples/jsm/controls/OrbitControls.js';
   
     init();
   
-    function createCamera() {
+    function createCamera(x = -4, y = 2, z = 4) {
         // Create a Camera
         const fov = 25; // AKA Field of View
         const aspect = width / height;

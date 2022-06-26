@@ -1,129 +1,388 @@
-function main() {
-  // Setting the scene
+//Define basic scene objs
+var scene, camera, renderer;
+var cameraHelper;
+var mesh, texture;
+var material = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    side: THREE.DoubleSide
+});
+var defaultMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    side: THREE.DoubleSide
+});
+var pointMaterial = false;
+var specialMaterial, preMaterial = false,
+    isBuffer = false;
+var backgroundTexture;
+var planeMaterial;
+var time = 0,
+    delta = 0;
+var metalColor = new THREE.Color('#BBA14F');
+var setMetalColor = false;
 
-  var scene = new THREE.Scene();
+material.needsUpdate = true;
 
-  // Camera Object
-
-  var camera = new THREE.PerspectiveCamera(4, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.z = 75;
-  camera.position.x = 50;
-  camera.position.y = 50;
-  camera.lookAt(scene.position);
-  camera.updateMatrixWorld();
-
-  // Render Object
-
-  var renderer = new THREE.WebGLRenderer();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  document.body.appendChild(renderer.domElement);
-
-
-
-  // Making the cube
-
-  // var geometry = new THREE.BoxGeometry(5, 5, 5, 5, 5, 5);
-  // var material = new THREE.MeshDepthMaterial({
-  //   opacity: 0.1,
-  //   blending: THREE.NormalBlending, 
-  //   depthTest: true,
-
-  // });
+//Define gui and controls elements
+//Basic params for TextGeometry
 
 
-  const geometry = new THREE.SphereGeometry(15, 32, 16);
-  const material = new THREE.MeshBasicMaterial({
-    color: 0xffff00
-  });
-  const cylinder = new THREE.Mesh(geometry, material);
+//Define params for points material
+var positions = [],
+    colors = [];
 
 
+// var gui = new dat.GUI({autoPlace: false});
+var gui = new dat.GUI();
+
+var control, orbit, gridHelper;
+var mouse = new THREE.Vector2();
+
+var planeFolder, objectFolder, AMBLightFolder, PLightFolder, cameraFolder, SLightFolder, materialFolder;
+
+//All about the lights
+var raycaster, PointLightHelper, meshPlane, light, ambientLight, SpotLightHelper;
 
 
-  // var cube = new THREE.Mesh(geometry, material);
-  var cube = cylinder;
+// // Adding the stat panel
+// var stats = new Stats();
+// stats.showPanel(0);
+// document.body.appendChild(stats.dom);
 
-  scene.add(cube);
+
+//Define basic Gemetry
+
+var type_material;
+
+var TextGeometry, BufferGeometry;
+var PlaneGeometry = new THREE.PlaneGeometry(2000, 2000);
+
+init();
 
 
+function init() {
+    // Scene
+    scene = createScene();
 
-  // Options to be added to the GUI
+    //Camera 
+    camera = createCamera();
 
-  var options = {
-    velx: 0,
-    vely: 0,
-    camera: {
-      speed: 0.0001
-    },
-    stop: function () {
-      this.velx = 0;
-      this.vely = 0;
-    },
-    reset: function () {
-      this.velx = 0.1;
-      this.vely = 0.1;
-      camera.position.z = 75;
-      camera.position.x = 0;
-      camera.position.y = 0;
-      cube.scale.x = 1;
-      cube.scale.y = 1;
-      cube.scale.z = 1;
-      cube.material.wireframe = true;
-    }
-  };
+    renderer = createRenderer();
+    document.body.appendChild(renderer.domElement);
 
-  // DAT.GUI Related Stuff
+    cameraFolder = gui.addFolder('Camera');
+    cameraFolder.add(camera.position, 'x', -1000, 1000);
+    cameraFolder.add(camera.position, 'y', -1000, 1000);
+    cameraFolder.add(camera.position, 'z', -1000, 1000);
 
-  var gui = new dat.GUI();
 
-  var cam = gui.addFolder('Camera');
-  cam.add(options.camera, 'speed', 0, 0.0010).listen();
-  cam.add(camera.position, 'y', 0, 100).listen();
-  cam.open();
+    cameraFolder.add(camera, 'fov', 0, 180)
+        .onChange(function (value) {
+            changeFOV(value);
+        })
 
-  var velocity = gui.addFolder('Velocity');
-  velocity.add(options, 'velx', -0.2, 0.2).name('X').listen();
-  velocity.add(options, 'vely', -0.2, 0.2).name('Y').listen();
-  velocity.open();
+    cameraFolder.add(camera, 'near', 0.1, 450)
+        .onChange(function (value) {
+            changeNear(value);
+        });
 
-  var box = gui.addFolder('Cube');
+    cameraFolder.add(camera, 'far', 500, 20000)
+        .onChange(function (value) {
+            changeFar(value);
+        });
 
-  let geometry_conf = configGeometry.Sphere;
-  // for (var key of Object.keys(geometry_conf)) {
-  //     console.log(key + " -> " + geometry_conf[key][0] + "-" + geometry_conf[key][1])
-  //     box.add(cube.scale., key, geometry_conf[key][0], geometry_conf[key][1]).listen();
+    cameraFolder.open()
 
-  // }
-  
-  box.add(cube.scale, 'x', 0, 3).name('Width').listen();
-  // box.add(cube.scale, 'y', 0, 3).name('Height').listen();
-  // box.add(cube.scale, 'z', 0, 3).name('Length').listen();
-  // box.add(cube.material, 'wireframe').listen();
-  box.open();
+    //Orbit Controls
+    orbit = new THREE.OrbitControls(camera, renderer.domElement);
+    orbit.update();
+    orbit.enableDamping = true;
+    orbit.dampingFactor = 0.05;
+    orbit.addEventListener('change', render);
 
-  gui.add(options, 'stop');
-  gui.add(options, 'reset');
+    render();
 
-  // Rendering the animation   
-
-  var render = function () {
-
-    requestAnimationFrame(render);
-
-    var timer = Date.now() * options.camera.speed;
-    camera.position.x = Math.cos(timer) * 100;
-    camera.position.z = Math.sin(timer) * 100;
-    camera.lookAt(scene.position);
-    camera.updateMatrixWorld();
-
-    cube.rotation.x += options.velx;
-    cube.rotation.y += options.vely;
-
-    renderer.render(scene, camera);
-
-  };
-
-  render();
 }
 
-main();
+function createCamera(x = 300, y = 400, z = 400) {
+    // Create a Camera
+    const fov = 25; // AKA Field of View
+    const aspect = window.innerWidth / window.innerHeight;
+    const near = 0.1; // the near clipping plane
+    const far = 1000; // the far clipping plane
+
+    var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+    camera.position.set(x, y, z);
+    // camera.lookAt(scene.position);
+
+    return camera;
+}
+
+function createScene() {
+    var scene = new THREE.Scene();
+    scene.name = 'scene';
+    scene.autoUpdate = true;
+    scene.background = new THREE.Color('#FFFFFF');
+    return scene;
+}
+
+// function createRenderer() {
+//     var renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+//     renderer.setSize(window.innerWidth, window.innerHeight);
+//     renderer.shadowMap.enabled = true;
+//     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+//     return renderer;
+// }
+
+function createRenderer() {
+    // var renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+    // renderer.setSize(window.innerWidth, window.innerHeight);
+    // renderer.shadowMap.enabled = true;
+    // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    return renderer;
+}
+
+function render() {
+    requestAnimationFrame(render);
+
+    renderer.render(scene, camera);
+}
+
+function animationLoop(){
+    update();
+    render();
+    // controls.update()
+}
+  
+
+// var render = function () {
+
+//     requestAnimationFrame(render);
+
+//     // var timer = Date.now() * options.camera.speed;
+//     // camera.position.x = Math.cos(timer) * 100;
+//     // camera.position.z = Math.sin(timer) * 100;
+//     // camera.lookAt(scene.position);
+//     // camera.updateMatrixWorld();
+
+//     // cube.rotation.x += options.velx;
+//     // cube.rotation.y += options.vely;
+
+//     renderer.render(scene, camera);
+
+//   };
+
+
+
+
+window.changeFOV = function(value = false) {
+    if (!value) {
+        var value = document.getElementById("FOV").value;
+        camera.fov = Number(value);
+        camera.updateProjectionMatrix();
+    }
+    else {
+        camera.fov = value;
+        camera.updateProjectionMatrix();
+    }
+}
+
+window.changeNear = function(value = false) {
+    if(!value) {
+        var value = document.getElementById("Near").value;
+        camera.near = Number(value);
+        camera.updateProjectionMatrix();
+    }
+    else {
+        camera.near = value;
+        camera.updateProjectionMatrix();
+    }
+}
+
+window.changeFar = function(value = false) {
+    if(!value) {
+        var value = document.getElementById("Far").value;
+        camera.far = Number(value);
+        camera.updateProjectionMatrix();
+    }
+    else {
+        camera.far = value;
+        camera.updateProjectionMatrix();
+    }
+}
+
+
+window.renderGeometry= function(id, fontName='Tahoma') {
+    // Setting the main-obj geometry
+
+    mesh = scene.getObjectByName('main-obj');
+    scene.remove(mesh);
+    if(mesh) {
+        gui.removeFolder(objectFolder);
+    }
+    
+    if (id != 'text') {
+        mesh_geometry = getGeo(id);
+        console.log(mesh_geometry.parameters)
+        mesh_geometry.name = id;
+        if(pointMaterial) 
+            mesh = new THREE.Points(mesh_geometry, material);
+        else    
+            mesh = new THREE.Mesh(mesh_geometry, material);
+        
+        scene.add(mesh);
+        mesh.name = 'main-obj';
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        // control_transform(mesh);
+    }
+    // else {
+    //     var text = document.getElementById('insertedText').value;
+    //     loader.load( dic[fontName], 
+    //         function(font) {
+    //             mesh_geometry = new THREE.TextGeometry(text, {
+    //                 font: font,
+    //                 size: obj_params['size'],
+    //                 height: obj_params['height'],
+    //                 curveSegments: obj_params['curveSegments'],
+            
+    //                 bevelThickness: obj_params['bevelThickness'],
+    //                 bevelSize: obj_params['bevelSize'],
+    //                 bevelEnabled: obj_params['bevelEnabled'],
+    //                 bevelOffset: obj_params['bevelOffset'],
+    //                 bevelSegments: obj_params['bevelSegments']
+    //             })
+    //             mesh_geometry.name = id;
+    //             mesh_geometry.computeBoundingBox();
+    //             if(pointMaterial)
+    //                 mesh = new THREE.Points(mesh_geometry, material);
+    //             else
+    //                 mesh = new THREE.Mesh(mesh_geometry, material);
+    //             mesh.name = 'main-obj';
+    //             mesh.castShadow = true;
+    //             mesh.receiveShadow = true;
+    //             scene.add(mesh);
+    //             control_transform(mesh);
+    //         })
+    // }
+    
+
+    //Adding GUI for control 
+    objectFolder = gui.addFolder('Object');
+
+    // Change mesh color
+    
+    if(id == 'text') {
+        // Let user pick font
+        objectFolder.add(obj_params, 'font', [ 'Tahoma', 'Bell', 'Broadway', 'Constantia', 'Luna', 'Roboto', 'Tahoma'])
+            .onChange(function(value) {
+                renderGeometry('text', value);
+            });
+    }
+    else {
+        objectFolder.add(mesh, 'visible');
+        if (mesh.geometry.parameters){
+            for(let i of Object.keys(mesh.geometry.parameters)) {
+                objectFolder.add(obj_params, i)
+                    .onChange(function(value) {
+                        renderGeometry(mesh_geometry.name)
+                    })
+            }
+        }
+    }
+    objectFolder.open();
+
+    // Adding controls on material type
+    if(materialFolder) {
+        gui.removeFolder(materialFolder);
+    }
+    materialFolder = gui.addFolder('Material');
+    materialFolder.addColor( obj_material, 'color')
+        .onChange(function() {
+            mesh.material.color.set( new THREE.Color(obj_material.color) );
+            mesh.material.needsUpdate = true;
+        });
+    materialFolder.add( obj_material, 'metalness', 0, 1.0)
+        .onChange(function(value) {
+            material.metalness = value;
+            mesh.material.metalness = value;
+            mesh.material.needsUpdate=true;
+        })
+    materialFolder.add( obj_material, 'roughness', 0, 1.0)
+    .onChange(function(value) {
+        material.roughness = value;
+        mesh.material.roughness = value;
+        mesh.material.needsUpdate=true;
+    })
+    materialFolder.add( obj_material, 'wireframe')
+        .onChange(function(value) {
+            material.wireframe = value;
+            mesh.material.wireframe = value;
+            mesh.material.needsUpdate = true;
+        });
+    materialFolder.add( obj_material, 'refractionRatio', 0, 1.0)
+        .onChange(function(value) {
+            material.refractionRatio = value;
+            mesh.material.refractionRatio = value;
+            mesh.material.needsUpdate = true;
+ 
+        });
+    materialFolder.add( obj_material, 'metalTexture', [ 'rose gold', 'gold', 'alu' ])
+        .onChange(function(value) {
+            var url = metalTextureDic[value][0];
+            metalColor = metalTextureDic[value][1];
+            setMetalColor = true;
+            setTexture(url, 'main-obj', true);
+        })
+
+    materialFolder.add(material, 'flatShading')
+        .onChange(function(value) {
+            mesh.material.flatShading = value;
+            mesh.material.needsUpdate = true;
+        })
+    
+    materialFolder.open();
+
+    render();
+}
+
+function getGeo(id) {
+    switch(id) {
+        case 'box':
+            return new THREE.BoxGeometry(obj_params['width'], obj_params['height'], obj_params['depth'], obj_params['widthSegments'], obj_params['heightSegments'], obj_params['depthSegments'])
+
+        case 'sphere':
+            return new THREE.SphereGeometry(obj_params['radius'], obj_params['widthSegments'], obj_params['heightSegments']);
+        
+        case 'cone':
+            return new THREE.ConeGeometry(obj_params['radius'], obj_params['height'], obj_params['radialSegments'], obj_params['heightSegments']);
+
+        case 'cylinder':
+            return new THREE.CylinderGeometry(obj_params['radiusTop'], obj_params['radiusBottom'], obj_params['height'], obj_params['radialSegments'])
+
+        case 'torus':
+            return new THREE.TorusGeometry(obj_params['width'], obj_params['tube'], obj_params['radialSegments'], obj_params['tubularSegments'])
+
+        case 'tea-pot':
+            return new TeapotBufferGeometry(obj_params['size'], obj_params['segments'])
+        
+        case 'icosa':
+            return new THREE.IcosahedronGeometry(obj_params['radius'], obj_params['detail'])
+
+        case 'dode':
+            return new THREE.DodecahedronGeometry(obj_params['radius'], obj_params['detail'])
+        
+        case 'octa':
+            return new THREE.OctahedronGeometry(obj_params['radius'], obj_params['detail'])
+
+        case 'tetra':
+            return new THREE.TetrahedronGeometry(obj_params['radius'], obj_params['detail'])
+
+        case 'circle':
+            return new THREE.CircleGeometry(obj_params['radius'], obj_params['segments'])
+    }
+}

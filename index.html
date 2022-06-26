@@ -35,17 +35,22 @@
 
 <body>
 
-
-
-
 	<script src="./lib/three.js"></script>
 	<script src="./lib/OrbitControls.js"></script>
 	<script src="./lib/dat.gui.min.js"></script>
 
 
-	<script src="./src/example.js"></script>
+
 	<script src="./src/config.js"></script>
-	<script src="./src/main.js"></script>
+	<script src="./src/params.js"></script>
+
+	<div id='webgl'>
+		<script type='module' src='./src/main.js'></script>
+	</div>
+
+
+
+	<!-- <script src="./src/main-backup.js"></script> -->
 
 	<div class="wrapper">
 		<!-- Sidebar  -->
@@ -79,13 +84,37 @@
 						class="dropdown-toggle">Shape</a>
 					<ul class="collapse list-unstyled" id="pageSubmenu">
 						<li>
-							<a href="#">Cube</a>
+							<a href="#" onclick="renderGeometry('box');">Cube</a>
 						</li>
 						<li>
-							<a href="#">Sphere</a>
+							<a href="#" onclick="renderGeometry('sphere');">Sphere</a>
 						</li>
 						<li>
-							<a href="#">Page 3</a>
+							<a href="#" onclick="renderGeometry('cone');">Cone</a>
+						</li>
+						<li>
+							<a href="#" onclick="renderGeometry('cylinder');">Cylinder</a>
+						</li>
+						<li>
+							<a href="#" onclick="renderGeometry('torus');">Torus</a>
+						</li>
+						<li>
+							<a href="#" onclick="renderGeometry('tea-pot');">Teapot</a>
+						</li>
+						<li>
+							<a href="#" onclick="renderGeometry('icosa');">Icosahedron</a>
+						</li>
+						<li>
+							<a href="#" onclick="renderGeometry('dode');">Dodecahedron</a>
+						</li>
+						<li>
+							<a href="#" onclick="renderGeometry('octa');">Octahedron</a>
+						</li>
+						<li>
+							<a href="#" onclick="renderGeometry('tetra');">Tetrahedron</a>
+						</li>
+						<li>
+							<a href="#" onclick="renderGeometry('circle');">Circle</a>
 						</li>
 					</ul>
 				</li>

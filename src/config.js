@@ -22,5 +22,6 @@ let configGeometry = {
 
 let geometry = configGeometry.Sphere;
 for (var key of Object.keys(geometry)) {
+    continue;
     console.log(key + " -> " + geometry[key][0] + "-" + geometry[key][1])
 }
