@@ -38,6 +38,7 @@
 	<script src="./lib/three.js"></script>
 	<script src="./lib/OrbitControls.js"></script>
 	<script src="./lib/dat.gui.min.js"></script>
+	<script type='module' src="./lib/TeapotGeometry.js"></script>
 
 
 
@@ -56,7 +57,7 @@
 		<!-- Sidebar  -->
 		<nav id="sidebar">
 			<div class="sidebar-header">
-				<h3>Bootstrap Sidebar</h3>
+				<h3>CS105 - Computer Graphics</h3>
 			</div>
 
 			<ul class="list-unstyled components">
@@ -120,16 +121,23 @@
 				</li>
 				<li>
 					<a href="#testSubmenu" data-toggle="collapse" aria-expanded="false"
-						class="dropdown-toggle">Texture</a>
+						class="dropdown-toggle">Surface</a>
 					<ul class="collapse list-unstyled" id="testSubmenu">
 						<li>
-							<a href="#">Page 1</a>
+							<a href="#" onclick="setMaterial('standard');">Standard</a>
 						</li>
 						<li>
-							<a href="#">Page 2</a>
+							<a href="#" onclick="setMaterial('point');">Point</a>
 						</li>
 						<li>
-							<a href="#">Page 3</a>
+							<a href="#" onclick="setMaterial('wireframe');">Wireframe</a>
+						</li>
+						<li>
+							<a href="#" onclick="setMaterial('basic');">Solid</a>
+						</li>
+						<li>
+							<a href="#" onClick='uploadImage("texture-obj");'>Special Texture</a>     
+							<input type='file' accept="image/*" id='texture-obj' style='display:none;' onChange="setTexture(window.URL.createObjectURL(this.files[0]))"/> 
 						</li>
 					</ul>
 				</li>

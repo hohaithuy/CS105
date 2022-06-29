@@ -1,3 +1,5 @@
+import { TeapotGeometry } from "../lib/TeapotGeometry.js";
+
 //Define basic scene objs
 var scene, camera, renderer;
 var cameraHelper;
@@ -94,12 +96,8 @@ function init() {
 
     //Orbit Controls
     orbit = new THREE.OrbitControls(camera, renderer.domElement);
-    orbit.update();
-    orbit.enableDamping = true;
-    orbit.dampingFactor = 0.05;
-    orbit.addEventListener('change', render);
 
-    render();
+    update();
 
 }
 
@@ -146,36 +144,18 @@ function createRenderer() {
     return renderer;
 }
 
-function render() {
-    requestAnimationFrame(render);
+function update(){
+    renderer.render(
+        scene,
+        camera
+    );
 
-    renderer.render(scene, camera);
+    orbit.update();
+    
+    requestAnimationFrame(function(){
+        update(renderer, scene, camera, orbit);
+    })
 }
-
-function animationLoop(){
-    update();
-    render();
-    // controls.update()
-}
-  
-
-// var render = function () {
-
-//     requestAnimationFrame(render);
-
-//     // var timer = Date.now() * options.camera.speed;
-//     // camera.position.x = Math.cos(timer) * 100;
-//     // camera.position.z = Math.sin(timer) * 100;
-//     // camera.lookAt(scene.position);
-//     // camera.updateMatrixWorld();
-
-//     // cube.rotation.x += options.velx;
-//     // cube.rotation.y += options.vely;
-
-//     renderer.render(scene, camera);
-
-//   };
-
 
 
 
@@ -347,7 +327,7 @@ window.renderGeometry= function(id, fontName='Tahoma') {
     
     materialFolder.open();
 
-    render();
+    // render();
 }
 
 function getGeo(id) {
@@ -368,7 +348,7 @@ function getGeo(id) {
             return new THREE.TorusGeometry(obj_params['width'], obj_params['tube'], obj_params['radialSegments'], obj_params['tubularSegments'])
 
         case 'tea-pot':
-            return new TeapotBufferGeometry(obj_params['size'], obj_params['segments'])
+            return new TeapotGeometry(obj_params['size'], obj_params['segments'])
         
         case 'icosa':
             return new THREE.IcosahedronGeometry(obj_params['radius'], obj_params['detail'])
@@ -385,4 +365,115 @@ function getGeo(id) {
         case 'circle':
             return new THREE.CircleGeometry(obj_params['radius'], obj_params['segments'])
     }
+}
+
+window.setMaterial = function(mat='point', obj='main-obj',color=0xffffff, size=3, wireframe=true, transparent=true) {
+    // Getting the current main-obj on screen and setting it with the chosen material 
+    type_material = mat;
+    light = scene.getObjectByName('light');
+    color = new THREE.Color(color);
+
+    if(obj == 'main-obj') {
+        // If this is setMaterial for main-obj
+        mesh = scene.getObjectByName('main-obj');
+
+        if (mesh) {
+            var dummy_mesh = mesh.clone();
+            scene.remove(mesh);
+
+            switch(type_material) {
+                case 'standard':
+                    material = new THREE.MeshStandardMaterial({ color: obj_material['color'], side: obj_material['side'] });
+                    pointMaterial = false;
+                    break;
+                case 'point':
+                    material = new THREE.PointsMaterial({ size: obj_material['size'], vertexColors: true, side: obj_material['side'], color: obj_material['color']});
+                    pointMaterial = true;
+                    break;
+
+                case 'wireframe':
+                    material = new THREE.MeshStandardMaterial({ color: obj_material['color'], wireframe: true, side: obj_material['side']});
+                    obj_material['wireframe'] = true;
+                    pointMaterial = false;
+                    break;
+
+                case 'normal':
+                    material = new THREE.MeshNormalMaterial({ color: obj_material['color'], side: obj_material['side']});
+
+                case 'phong':
+                    material = new THREE.MeshPhongMaterial({color: obj_material['color'], side: obj_material['side']});
+                    pointMaterial = false;
+                    break;
+                case 'basic':
+                    material = new THREE.MeshBasicMaterial({ color: obj_material['color'], side: obj_material['side']});
+                    pointMaterial = false;
+                    break;
+
+                case 'lambert':
+                    if (!light) 
+                        material = new THREE.MeshBasicMaterial({map: texture,  color: obj_material['color'], side: obj_material['side'] });
+                    else
+                        material = new THREE.MeshLambertMaterial({map: texture, color: obj_material['color'], side: obj_material['side']});
+                    pointMaterial = false;
+                    break;
+                case 'metal':
+                    if(!setMetalColor) {
+                        material = new THREE.MeshPhysicalMaterial({color: obj_material['color'], roughness:0 ,metalness:1, side: obj_material['side']});
+                    }
+                    else {
+                        material = new THREE.MeshPhysicalMaterial({color: metalColor, roughness:0 ,metalness:1, side: obj_material['side']});
+                        setMetalColor = false;
+                    }
+                        
+                    material.metalnessMap = texture;
+                    material.roughnessMap = texture;
+                    material.envMap = envMap;
+                    material.envMapIntensity = 1;
+                    break;
+                default:
+                    material = new THREE.MeshPhongMaterial({ color: obj_material['color'], side: obj_material['side'] });
+
+            }
+
+            if(mat == 'point') {
+                mesh = new THREE.Points(dummy_mesh.geometry, material);
+            }
+            else {
+                mesh = new THREE.Mesh(dummy_mesh.geometry, material);
+            }
+            CloneMesh(dummy_mesh);
+            update();
+        
+        }
+    }
+    else if (obj == 'plane') {
+        meshPlane = scene.getObjectByName('plane');
+        if(plane) {
+            var dummy_plane = meshPlane.clone();
+            scene.remove(meshPlane);
+
+            switch(type_material) {
+                case 'lambert':
+                    planeMaterial = new THREE.MeshLambertMaterial({map: texture, color: color, side: THREE.DoubleSide});
+                    break;
+                default:
+                    planeMaterial = new THREE.MeshPhongMaterial({ color: color, side: THREE.DoubleSide });
+            }
+            meshPlane = new THREE.Mesh(PlaneGeometry, planeMaterial);
+            CloneMesh(dummy_plane, meshPlane);
+        }
+    }
+}
+
+function CloneMesh(dummy_mesh, obj=mesh) {
+    // Inherit all name, position and animation that is currently on the old mesh 
+    // Put it on the new one
+    obj.name = dummy_mesh.name;
+    obj.position.set(dummy_mesh.position.x, dummy_mesh.position.y, dummy_mesh.position.z);
+    obj.rotation.set(dummy_mesh.rotation.x, dummy_mesh.rotation.y, dummy_mesh.rotation.z);
+    obj.scale.set(dummy_mesh.scale.x, dummy_mesh.scale.y, dummy_mesh.scale.z);
+	obj.castShadow = true;
+	obj.receiveShadow = true;
+    scene.add(obj);
+    // control_transform(obj);
 }
