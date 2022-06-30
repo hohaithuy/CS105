@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>My first three.js app</title>
+	<title>Đồ án CS105</title>
 	<style>
 		body {
 			margin: 0;
@@ -38,6 +38,8 @@
 	<script src="./lib/three.js"></script>
 	<script src="./lib/OrbitControls.js"></script>
 	<script src="./lib/dat.gui.min.js"></script>
+	<script type="module" src="./lib/TransformControls.js"></script>
+
 	<script type='module' src="./lib/TeapotGeometry.js"></script>
 
 
@@ -52,6 +54,7 @@
 
 
 	<!-- <script src="./src/main-backup.js"></script> -->
+	<div id='auxiliary'></div>
 
 	<div class="wrapper">
 		<!-- Sidebar  -->
@@ -61,7 +64,7 @@
 			</div>
 
 			<ul class="list-unstyled components">
-				<p>Dummy Heading</p>
+				<p>Đồ án môn học</p>
 				<li class="active">
 					<a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Add
 						Scene</a>
@@ -77,6 +80,18 @@
 						</li>
 					</ul>
 				</li>
+
+				<li class="active">
+					<input type='checkbox'  id='plane' value='plane' name='plane' onchange="displayPlane()"/>
+					<label for='plane'>Plane</label>
+					<input type='file' accept="image/*" id='texture-plane' style='display:none;' onChange="setTexture(window.URL.createObjectURL(this.files[0]),'plane')"/> 
+					<div class='plane-texture' onClick='uploadImage("texture-plane")'>Set Plane Texture</div>
+				</li>
+				<li data-toggle="collapse" aria-expanded="false">
+					<input type='checkbox' id='ambient' value='ambient' name='ambient' onchange="displayAmbient()"/>
+					<label for='ambient'>Ambient Light</label>
+				</li>
+				
 				<li>
 					<a href="#lightSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Add
 						Light</a>
