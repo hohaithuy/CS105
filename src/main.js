@@ -5,9 +5,12 @@ import {
 import {
     BoxLineGeometry
 } from "../lib/BoxLineGeometry.js";
+
+console.log(THREE.REVISION);
 import {
-    LatheGeometry
-} from "../lib/three.module.js";
+    TransformControls
+} from "../lib/TransformControls.js";
+
 //Define basic scene objs
 var scene, camera, renderer;
 var cameraHelper;
@@ -105,7 +108,18 @@ function init() {
     //Orbit Controls
     orbit = new THREE.OrbitControls(camera, renderer.domElement);
 
+    control = new TransformControls(camera, renderer.domElement);
+    control.name = 'control';
+    control.addEventListener('change', nothing);
+    control.addEventListener('dragging-changed', function(event) {
+        orbit.enabled = !event.value;
+    })
+
     update();
+
+}
+
+function nothing(){
 
 }
 
@@ -224,7 +238,7 @@ window.renderGeometry = function (id, fontName = 'Tahoma') {
     mesh.name = 'main-obj';
     mesh.castShadow = true;
     mesh.receiveShadow = true;
-    // control_transform(mesh);
+    control_transform(mesh);
 
 
     //Adding GUI for control 
@@ -485,6 +499,8 @@ window.setMaterial = function (mat = 'point', obj = 'main-obj', color = 0xffffff
     }
 }
 
+
+
 function CloneMesh(dummy_mesh, obj = mesh) {
     // Inherit all name, position and animation that is currently on the old mesh 
     // Put it on the new one
@@ -495,7 +511,7 @@ function CloneMesh(dummy_mesh, obj = mesh) {
     obj.castShadow = true;
     obj.receiveShadow = true;
     scene.add(obj);
-    // control_transform(obj);
+    control_transform(obj);
 }
 
 
@@ -525,7 +541,7 @@ window.setPointLight = function () {
 
     light = createPointLight();
     scene.add(light);
-    // control_transform(light);
+    control_transform(light);
 
     PointLightHelper = new THREE.PointLightHelper(light);
     PointLightHelper.name = 'pointlight-helper';
@@ -544,19 +560,32 @@ window.setPointLight = function () {
 
 }
 
-window.removeLight = function () {
-
-
+window.removeLight = function() {
+    if(control.object) {
+        if(control.object.name == 'light')
+            // What if there is not mesh there
+            var len = scene.children.length;
+            for (var i of scene.children) {
+                len--;
+                if(i.name == 'main-obj' || i.name == 'plane') {
+                    control.object = i;
+                    break;
+                } 
+                if(len == 0) 
+                    control.detach();
+            }
+    }
+    
     // Remove light folder
-    for (let [key, value] of Object.entries(gui.__folders)) {
-        if (value.name == 'PointLight' || value.name == 'SpotLight') {
+    for(let [key, value] of Object.entries(gui.__folders)) {
+        if(value.name == 'PointLight' || value.name == 'SpotLight') {
             gui.removeFolder(value);
         }
     }
 
     // Remove helper from scene
-    for (let i of scene.children) {
-        if (i.name == 'spotlight-helper' || i.name == 'pointlight-helper') {
+    for(let i of scene.children) {
+        if(i.name == 'spotlight-helper' || i.name == 'pointlight-helper') {
             scene.remove(i)
         }
     }
@@ -564,7 +593,6 @@ window.removeLight = function () {
     // Remove light
     scene.remove(light);
 
-    // render();
 }
 
 // SpotLightHelper Light
@@ -607,8 +635,6 @@ window.setSpotLight = function () {
         .onChange(function (value) {
             light.intensity = value;
         });
-    // render();
-
 }
 
 //Ambient Light
@@ -651,3 +677,117 @@ window.displayAmbient = function () {
 }
 
 // Why it's not change anything?
+
+var params = {
+    color: 0xffffff,
+}
+
+window.displayPlane = function() {
+    var checked = document.querySelector('input[id="plane"]:checked');
+    if(checked) {
+        //console.log('checked');
+        //Adding Plane to current env
+        planeMaterial = new THREE.MeshStandardMaterial(params);
+        planeMaterial.side = THREE.DoubleSide;
+        meshPlane = new THREE.Mesh(PlaneGeometry, planeMaterial);
+
+        meshPlane.receiveShadow = true;
+        meshPlane.castShadow = true;
+
+        meshPlane.rotation.x -= Math.PI / 2;
+        meshPlane.position.y = -150
+        meshPlane.name = 'plane'
+        scene.add(meshPlane);
+        control_transform(meshPlane);
+
+
+        planeFolder = gui.addFolder('Plane');
+        planeFolder.addColor( params, 'color')
+            .onChange( function() { 
+                meshPlane.material.color.set( new THREE.Color(params.color) );
+                meshPlane.material.needsUpdate = true;
+            });
+        ;
+    }
+    else {
+        //console.log('unchecked');
+        //Remove it from current env
+        meshPlane = scene.getObjectByName('plane');
+        if (meshPlane) {
+            gui.removeFolder(planeFolder);
+            control.detach();
+            scene.remove(meshPlane);
+        }
+    }
+}
+
+// Animation and controls
+
+function control_transform(mesh) {
+    control.attach(mesh);
+    scene.add(control);
+
+    text = 'T for translate, R for rotate, S for scale, L for Point Light ON, press spacebar for turn Point/Spot Light OFF, right click on object to move control.'
+    addTexttoHeader(text);
+
+    document.addEventListener('keydown', function (event) {
+        console.log(event.key)
+        switch (event.key) {
+            case 't': // T
+                control.setMode("translate")
+                break;
+            case 'r': // R
+                control.setMode("rotate")
+                break;
+            case 's': // S
+                control.setMode("scale")
+                break;
+            case 'l': // L
+                setPointLight(); 
+                break;
+            case ' ': // spacebar
+                removeLight(); 
+                break;
+        }
+    });
+}
+
+function onMouseDown(event) {
+    event.preventDefault();
+    if(event.button == 2) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        var intersects = raycaster.intersectObjects(scene.children);
+        
+        // If there is any object need to use control at right click position
+        // Change to it
+
+        for(let i of intersects) {
+            if(i.object.name == 'poinlight-helper' || i.object.name == 'spotlight-helper' || i.object.name == 'main-obj' || i.object.name == 'plane') {
+                control_transform(i.object);
+                break;
+            }
+        }
+        render();
+    }
+}
+
+//Define text on header;
+var text = 'Project'
+addTexttoHeader(text, 'auxiliary');
+
+// Auxiliary function
+function addTexttoHeader(text = 'Hello Word', id='auxiliary'){
+    var already = document.getElementById(id);
+    if (already.innerHTML) 
+        already.textContent = text
+    else
+        {
+            var element = document.createElement('a');
+            element.href = './index.html'
+            element.className = 'title';
+            element.innerText = text;
+            already.appendChild(element)
+        }
+}
