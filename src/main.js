@@ -66,7 +66,7 @@ var raycaster, PointLightHelper, meshPlane, light, ambientLight, SpotLightHelper
 var type_material;
 
 var TextGeometry, BufferGeometry;
-var PlaneGeometry = new THREE.PlaneGeometry(2000, 2000);
+var PlaneGeometry = new THREE.PlaneGeometry(500, 500);
 
 init();
 
@@ -144,24 +144,18 @@ function createScene() {
     return scene;
 }
 
-// function createRenderer() {
-//     var renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
-//     renderer.setSize(window.innerWidth, window.innerHeight);
-//     renderer.shadowMap.enabled = true;
-//     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-//     return renderer;
-// }
 
 function createRenderer() {
     // var renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
     // renderer.setSize(window.innerWidth, window.innerHeight);
-    // renderer.shadowMap.enabled = true;
     // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor('rgb(120, 120, 120)');
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
 
 
     return renderer;
@@ -482,13 +476,13 @@ window.setMaterial = function (mat = 'point', obj = 'main-obj', color = 0xffffff
                 case 'lambert':
                     planeMaterial = new THREE.MeshLambertMaterial({
                         map: texture,
-                        color: color,
+                        color: params.color,
                         side: THREE.DoubleSide
                     });
                     break;
                 default:
-                    planeMaterial = new THREE.MeshPhongMaterial({
-                        color: color,
+                    planeMaterial = new THREE.MeshStandardMaterial({
+                        color: params.color,
                         side: THREE.DoubleSide
                     });
             }
@@ -555,6 +549,9 @@ window.setPointLight = function () {
         .onChange(function (value) {
             light.intensity = value;
         })
+        PLightFolder.add(light.position, 'x', 0, 20)
+        PLightFolder.add(light.position, 'y', 0, 20)
+        PLightFolder.add(light.position, 'z', 0, 20)
     // render();
 
 }
@@ -634,6 +631,10 @@ window.setSpotLight = function () {
         .onChange(function (value) {
             light.intensity = value;
         });
+
+    SLightFolder.add(light, 'castShadow');
+    SLightFolder.open();
+
 }
 
 //Ambient Light
@@ -657,6 +658,8 @@ window.setAmbientLight = function () {
         .onChange(function () {
             ambientLight.color.set(new THREE.Color(AMBDefault.color));
         })
+
+    AMBLightFolder.add(ambientLight, 'intensity', 0, 1, 0.1);
 }
 
 window.removeAmbientLight = function () {
@@ -686,7 +689,7 @@ window.displayPlane = function() {
     if(checked) {
         //console.log('checked');
         //Adding Plane to current env
-        planeMaterial = new THREE.MeshStandardMaterial(params);
+        planeMaterial = new THREE.MeshPhongMaterial(params);
         planeMaterial.side = THREE.DoubleSide;
         meshPlane = new THREE.Mesh(PlaneGeometry, planeMaterial);
 
