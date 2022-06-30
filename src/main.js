@@ -759,7 +759,6 @@ window.setTexture = function(value, obj='main-obj') {
         if(meshPlane) {
             planeMaterial.map = loader.load('../assets/Lava_005_COLOR.jpg');
             // material.bumpMap = loader.load('./assets/conce.jpg');
-            planeMaterial.roughnessMap = loader.load(metalTextureDic[value].roughnessMap);
             planeMaterial.metalness = 0.1;
             planeMaterial.bumScale = 0.01;
             planeMaterial.roughness = 0.7;
