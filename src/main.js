@@ -46,6 +46,8 @@ var planeFolder, objectFolder, AMBLightFolder, PLightFolder, cameraFolder, SLigh
 //All about the lights
 var raycaster, PointLightHelper, meshPlane, light, ambientLight, SpotLightHelper;
 
+// sphereMaterial.envMap = reflectionCube;
+
 
 // // Adding the stat panel
 // var stats = new Stats();
@@ -105,7 +107,6 @@ function init() {
     control.addEventListener('dragging-changed', function(event) {
         orbit.enabled = !event.value;
     })
-
     update();
 
 }
@@ -298,16 +299,19 @@ window.renderGeometry = function (id, fontName = 'Tahoma') {
             mesh.material.needsUpdate = true;
 
         });
-        console.log("asdasdad")
     materialFolder.add(obj_material, 'metalTexture', ['metal', 'rock'])
         .onChange(function (value) {   
-
             setTexture(value, 'main-obj');
         })
 
+    materialFolder.add(obj_material, 'flatShading')
+    .onChange(function(value) {
+        mesh.material.flatShading = value;
+        mesh.material.needsUpdate = true;
+    })
+
     materialFolder.open();
 
-    // render();
 }
 
 function getGeo(id) {
@@ -352,6 +356,7 @@ window.setMaterial = function (mat = 'point', obj = 'main-obj', color = '#B6371C
         if (mesh) {
             var dummy_mesh = mesh.clone();
             scene.remove(mesh);
+            console.log(type_material);
 
             switch (type_material) {
                 case 'standard':
@@ -386,6 +391,8 @@ window.setMaterial = function (mat = 'point', obj = 'main-obj', color = '#B6371C
                         color: obj_material['color'],
                         side: obj_material['side']
                     });
+                    pointMaterial = false;
+                    break;
                 case 'basic':
                     material = new THREE.MeshBasicMaterial({
                         color: obj_material['color'],
@@ -608,7 +615,7 @@ window.setAmbientLight = function () {
             ambientLight.color.set(new THREE.Color(AMBDefault.color));
         })
 
-    AMBLightFolder.add(ambientLight, 'intensity', 0, 1, 0.1);
+    AMBLightFolder.add(ambientLight, 'intensity', 0, 10, 0.1);
 }
 
 window.removeAmbientLight = function () {
@@ -659,6 +666,11 @@ window.displayPlane = function() {
                 meshPlane.material.needsUpdate = true;
             });
         ;
+        planeFolder.add(obj_material, 'metalTexture', ['lava'])
+        .onChange(function (value) {   
+            setTexture(value, 'plane');
+            meshPlane.material.needsUpdate = true;
+        })
     }
     else {
         meshPlane = scene.getObjectByName('plane');
@@ -721,33 +733,37 @@ function addTexttoHeader(text = 'Hello Word', id='auxiliary'){
 }
 
 var metalTextureDic = {
-    "metal": { map: '../assets/Metal_006_SD-20220630T113315Z-001/Metal_006_SD/Material_2079.jpg', 
-    roughnessMap: '../assets/Metal_006_SD-20220630T113315Z-001/Metal_006_SD/Metal_006_roughness.jpg',
-    color: '#D0D5DB'},
-    "rock": ['./graphics/textures/alu.jpg', '#D0D5DB'],
-    "gold": ['./graphics/textures/gold.jpg', '#BBA14F'],
+    "metal": { map: '../assets/Metal_006_SD-20220630T113315Z-001/Metal_006_SD/Metal_006_ambientOcclusion.jpg', 
+    roughnessMap: '../assets/Metal_006_SD-20220630T113315Z-001/Metal_006_SD/Metal_006_roughness.jpg'},
+    "rock": { map: '../assets/Rock_047_SD-20220630T113312Z-001/Rock_047_SD/Rock_047_Height.png', 
+    roughnessMap: '../assets/Rock_047_SD-20220630T113312Z-001/Rock_047_SD/Rock_047_Roughness.jpg'},
 }
 
 window.setTexture = function(value, obj='main-obj') {
     mesh = scene.getObjectByName('main-obj');
     meshPlane = scene.getObjectByName('plane');
+    var loader = new THREE.TextureLoader();
+
     if(obj == 'main-obj') {  
         if(mesh) {
-            var loader = new THREE.TextureLoader();
-            material.map = loader.load(metalTextureDic[obj].map);
-            console.log(metalTextureDic[value].map)
+            material.map = loader.load(metalTextureDic[value].map);
             // material.bumpMap = loader.load('./assets/conce.jpg');
-            material.roughnessMap = loader.load('./assets/conce.jpg');
+            material.roughnessMap = loader.load(metalTextureDic[value].roughnessMap);
             material.metalness = 0.1;
             material.bumScale = 0.01;
             material.roughness = 0.7;
+            mesh.material.needsUpdate = true;
         }
     }
     if(obj == 'plane') {
-        if(plane) {
-            texture = new THREE.TextureLoader().load(url, render);
-            texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-            setMaterial('lambert', obj=obj);
+        if(meshPlane) {
+            planeMaterial.map = loader.load('../assets/Lava_005_COLOR.jpg');
+            // material.bumpMap = loader.load('./assets/conce.jpg');
+            planeMaterial.roughnessMap = loader.load(metalTextureDic[value].roughnessMap);
+            planeMaterial.metalness = 0.1;
+            planeMaterial.bumScale = 0.01;
+            planeMaterial.roughness = 0.7;
+            meshPlane.material.needsUpdate = true;
         }
     }
     if(obj == 'background') {
@@ -756,13 +772,14 @@ window.setTexture = function(value, obj='main-obj') {
             scene.background = texture;
         })
     }
+
 }
 
 
 function getMaterial(type, color) {
     var selectedMaterial;
     var materialOptions = {
-        color: color === undefined ? 'rgb(255, 255, 255)' : color,
+        color: color === undefined ? 'rgb(7, 12, 212)' : color,
         side: THREE.DoubleSide,
     }
     switch (type) {
