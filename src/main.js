@@ -727,10 +727,10 @@ function addTexttoHeader(text = 'Hello Word', id='auxiliary'){
 }
 
 var metalTextureDic = {
-    "metal": { map: '../assets/Metal_006_SD-20220630T113315Z-001/Metal_006_SD/Metal_006_ambientOcclusion.jpg', 
-    roughnessMap: '../assets/Metal_006_SD-20220630T113315Z-001/Metal_006_SD/Metal_006_roughness.jpg'},
-    "rock": { map: '../assets/Rock_047_SD-20220630T113312Z-001/Rock_047_SD/Rock_047_Height.png', 
-    roughnessMap: '../assets/Rock_047_SD-20220630T113312Z-001/Rock_047_SD/Rock_047_Roughness.jpg'},
+    "metal": { map: '../docs/assets/Metal_006_SD-20220630T113315Z-001/Metal_006_SD/Metal_006_ambientOcclusion.jpg', 
+    roughnessMap: '../docs/assets/Metal_006_SD-20220630T113315Z-001/Metal_006_SD/Metal_006_roughness.jpg'},
+    "rock": { map: '../docs/assets/Rock_047_SD-20220630T113312Z-001/Rock_047_SD/Rock_047_Height.png', 
+    roughnessMap: '../docs/assets/Rock_047_SD-20220630T113312Z-001/Rock_047_SD/Rock_047_Roughness.jpg'},
 }
 
 window.setTexture = function(value, obj='main-obj') {
@@ -741,7 +741,7 @@ window.setTexture = function(value, obj='main-obj') {
     if(obj == 'main-obj') {  
         if(mesh) {
             material.map = loader.load(metalTextureDic[value].map);
-            // material.bumpMap = loader.load('./assets/conce.jpg');
+            // material.bumpMap = loader.load('./docs/assets/conce.jpg');
             material.roughnessMap = loader.load(metalTextureDic[value].roughnessMap);
             material.metalness = 0.1;
             material.bumScale = 0.01;
@@ -751,8 +751,8 @@ window.setTexture = function(value, obj='main-obj') {
     }
     if(obj == 'plane') {
         if(meshPlane) {
-            planeMaterial.map = loader.load('../assets/Lava_005_COLOR.jpg');
-            // material.bumpMap = loader.load('./assets/conce.jpg');
+            planeMaterial.map = loader.load('../docs/assets/Lava_005_COLOR.jpg');
+            // material.bumpMap = loader.load('./docs/assets/conce.jpg');
             planeMaterial.metalness = 0.1;
             planeMaterial.bumScale = 0.01;
             planeMaterial.roughness = 0.7;
