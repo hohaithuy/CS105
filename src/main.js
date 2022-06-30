@@ -493,9 +493,9 @@ window.setPointLight = function () {
         .onChange(function (value) {
             light.intensity = value;
         })
-        PLightFolder.add(light.position, 'x', 0, 20)
-        PLightFolder.add(light.position, 'y', 0, 20)
-        PLightFolder.add(light.position, 'z', 0, 20)
+        PLightFolder.add(light.position, 'x', 0, 200)
+        PLightFolder.add(light.position, 'y', 0, 200)
+        PLightFolder.add(light.position, 'z', 0, 200)
         PLightFolder.add(light, 'castShadow');
 
     // render();
@@ -562,7 +562,7 @@ window.setSpotLight = function () {
 
     light = createSpotLight();
     scene.add(light);
-    // control_transform(light);
+    control_transform(light);
 
     SpotLightHelper = new THREE.SpotLightHelper(light);
     SpotLightHelper.name = 'spotlight-helper';
@@ -578,9 +578,9 @@ window.setSpotLight = function () {
             light.intensity = value;
         });
 
-    SLightFolder.add(light.position, 'x', 0, 20)
-    SLightFolder.add(light.position, 'y', 0, 20)
-    SLightFolder.add(light.position, 'z', 0, 20)
+    SLightFolder.add(light.position, 'x', 0, 200)
+    SLightFolder.add(light.position, 'y', 0, 200)
+    SLightFolder.add(light.position, 'z', 0, 200)
     SLightFolder.add(light, 'castShadow');
     SLightFolder.open();
 
