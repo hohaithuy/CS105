@@ -649,3 +649,5 @@ window.displayAmbient = function () {
         removeAmbientLight();
     }
 }
+
+// Why it's not change anything?
