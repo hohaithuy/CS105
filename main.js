@@ -1,14 +1,14 @@
 import {
     TeapotGeometry
-} from "../lib/TeapotGeometry.js";
+} from "./lib/TeapotGeometry.js";
 
 import {
     BoxLineGeometry
-} from "../lib/BoxLineGeometry.js";
+} from "./lib/BoxLineGeometry.js";
 
 import {
     TransformControls
-} from "../lib/TransformControls.js";
+} from "./lib/TransformControls.js";
 
 //Define basic scene objs
 var scene, camera, renderer;
@@ -727,10 +727,10 @@ function addTexttoHeader(text = 'Hello Word', id='auxiliary'){
 }
 
 var metalTextureDic = {
-    "metal": { map: '../docs/assets/Metal_006_SD-20220630T113315Z-001/Metal_006_SD/Metal_006_ambientOcclusion.jpg', 
-    roughnessMap: '../docs/assets/Metal_006_SD-20220630T113315Z-001/Metal_006_SD/Metal_006_roughness.jpg'},
-    "rock": { map: '../docs/assets/Rock_047_SD-20220630T113312Z-001/Rock_047_SD/Rock_047_Height.png', 
-    roughnessMap: '../docs/assets/Rock_047_SD-20220630T113312Z-001/Rock_047_SD/Rock_047_Roughness.jpg'},
+    "metal": { map: './docs/assets/Metal_006_SD-20220630T113315Z-001/Metal_006_SD/Metal_006_ambientOcclusion.jpg', 
+    roughnessMap: './docs/assets/Metal_006_SD-20220630T113315Z-001/Metal_006_SD/Metal_006_roughness.jpg'},
+    "rock": { map: './docs/assets/Rock_047_SD-20220630T113312Z-001/Rock_047_SD/Rock_047_Height.png', 
+    roughnessMap: './docs/assets/Rock_047_SD-20220630T113312Z-001/Rock_047_SD/Rock_047_Roughness.jpg'},
 }
 
 window.setTexture = function(value, obj='main-obj') {
@@ -751,7 +751,7 @@ window.setTexture = function(value, obj='main-obj') {
     }
     if(obj == 'plane') {
         if(meshPlane) {
-            planeMaterial.map = loader.load('../docs/assets/Lava_005_COLOR.jpg');
+            planeMaterial.map = loader.load('./docs/assets/Lava_005_COLOR.jpg');
             // material.bumpMap = loader.load('./docs/assets/conce.jpg');
             planeMaterial.metalness = 0.1;
             planeMaterial.bumScale = 0.01;
