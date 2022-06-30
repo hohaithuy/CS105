@@ -831,6 +831,7 @@ window.initBasicAnimation = function() {
         else {
             mesh.rotation.z = 0;
         }
+        
 
     }
     requestAnimationFrame(initBasicAnimation)
