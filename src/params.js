@@ -35,7 +35,7 @@ var obj_params = {
 }
 
 var obj_material = {
-    color: 0xffffff,
+    color: 0x3f7b9d,
     size: 3,
     wireframe: false,
     transparent: false,

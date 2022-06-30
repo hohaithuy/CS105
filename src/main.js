@@ -661,8 +661,6 @@ window.displayPlane = function() {
         ;
     }
     else {
-        //console.log('unchecked');
-        //Remove it from current env
         meshPlane = scene.getObjectByName('plane');
         if (meshPlane) {
             gui.removeFolder(planeFolder);
@@ -701,27 +699,6 @@ function control_transform(mesh) {
                 break;
         }
     });
-}
-
-function onMouseDown(event) {
-    event.preventDefault();
-    if(event.button == 2) {
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        raycaster.setFromCamera(mouse, camera);
-        var intersects = raycaster.intersectObjects(scene.children);
-        
-        // If there is any object need to use control at right click position
-        // Change to it
-
-        for(let i of intersects) {
-            if(i.object.name == 'poinlight-helper' || i.object.name == 'spotlight-helper' || i.object.name == 'main-obj' || i.object.name == 'plane') {
-                control_transform(i.object);
-                break;
-            }
-        }
-        render();
-    }
 }
 
 //Define text on header;
@@ -805,3 +782,39 @@ function getMaterial(type, color) {
     return selectedMaterial;
 }
 
+
+
+var ax = 0.01, ay=0.01, az=0.01;
+
+window.initBasicAnimation = function() {
+    // See if any box of animation has been checked
+    var ani1 = document.querySelector('input[id="ani1"]:checked');
+    var ani2 = document.querySelector('input[id="ani2"]:checked');
+    var ani3 = document.querySelector('input[id="ani3"]:checked');
+
+    var mesh = scene.getObjectByName('main-obj');
+    if(mesh) {
+        if(ani1) {
+            mesh.rotation.x += ax;
+        }
+        else{
+            mesh.rotation.x = 0;
+        }
+
+        if(ani2){
+            mesh.rotation.y += ay;
+        }
+        else {
+            mesh.rotation.y = 0;
+        }
+
+        if(ani3){
+            mesh.rotation.z += az;
+        }
+        else {
+            mesh.rotation.z = 0;
+        }
+
+    }
+    requestAnimationFrame(initBasicAnimation)
+}

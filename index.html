@@ -160,7 +160,33 @@
 						</ul>
 					</li>
 					<li>
-						<a href="#">Animation</a>
+						<a href="#animation" data-toggle="collapse" aria-expanded="false"
+							class="dropdown-toggle">Animation</a>
+						<ul class="collapse list-unstyled" id="animation">
+							<li>
+								<a href="#"> <input type="checkbox" value="ani1" name='ani1' id="ani1"
+										onChange="initBasicAnimation()">
+									<label for="anim1" onClick="document.getElementById('ani1').click()">Animation
+										1: rotate x</label></a>
+
+							</li>
+							<li>
+								<a href="#">
+									<input type="checkbox" value="ani2" name='ani2' id="ani2"
+										onChange="initBasicAnimation()">
+									<label for="anim2" onClick="document.getElementById('ani2').click()">Animation
+										2: rotate y</label></a>
+
+							</li>
+							<li>
+								<a href="#">
+									<input type="checkbox" value="ani3" name='ani3' id="ani3"
+										onChange="initBasicAnimation()">
+									<label for="anim3" onClick="document.getElementById('ani3').click()">Animation
+										3: rotate z</label>	</a>
+
+							</li>
+						</ul>
 					</li>
 					<li>
 						<a href="#">Contact</a>
