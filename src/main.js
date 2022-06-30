@@ -299,13 +299,13 @@ window.renderGeometry = function (id, fontName = 'Tahoma') {
             mesh.material.needsUpdate = true;
 
         });
-    materialFolder.add(obj_material, 'metalTexture', ['rose gold', 'gold', 'alu'])
-        .onChange(function (value) {
-            var url = metalTextureDic[value][0];
-            metalColor = metalTextureDic[value][1];
-            setMetalColor = true;
-            setTexture(url, 'main-obj', true);
-        })
+    // materialFolder.add(obj_material, 'metalTexture', ['rose gold', 'gold', 'alu'])
+    //     .onChange(function (value) {
+    //         var url = metalTextureDic[value][0];
+    //         metalColor = metalTextureDic[value][1];
+    //         setMetalColor = true;
+    //         setTexture(url, 'main-obj', true);
+    //     })
 
     materialFolder.open();
 
