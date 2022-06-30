@@ -304,12 +304,6 @@ window.renderGeometry = function (id, fontName = 'Tahoma') {
             setTexture(value, 'main-obj');
         })
 
-    materialFolder.add(obj_material, 'flatShading')
-    .onChange(function(value) {
-        mesh.material.flatShading = value;
-        mesh.material.needsUpdate = true;
-    })
-
     materialFolder.open();
 
 }
