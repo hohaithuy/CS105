@@ -6,7 +6,6 @@ import {
     BoxLineGeometry
 } from "../lib/BoxLineGeometry.js";
 
-console.log(THREE.REVISION);
 import {
     TransformControls
 } from "../lib/TransformControls.js";
