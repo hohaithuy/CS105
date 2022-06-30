@@ -30,6 +30,8 @@ var obj_params = {
     thetaLength: 0,
     openEnded: 0,
     arc: 20,
+    p: 2,
+    q: 3,
 }
 
 var obj_material = {
@@ -49,6 +51,25 @@ var obj_material = {
     normalMapType: THREE.TangentSpaceNormalMap,
     refractionRatio: 0.98,
     metalTexture: 'rose gold'
+}
+
+var teapot_params = {
+    size: 50,
+    segments: 10,
+    // bottom: true,
+    // lid: true,
+    // body: true,
+    // fitLid: true,
+    // blinn: true
+}
+
+var boxline_params = {
+    width: 1,
+    height: 1,
+    depth: 1,
+    widthSegments: 1,
+    heightSegments: 1,
+    depthSegments: 1
 }
 
 var mesh_geometry;

@@ -1,5 +1,13 @@
-import { TeapotGeometry } from "../lib/TeapotGeometry.js";
+import {
+    TeapotGeometry
+} from "../lib/TeapotGeometry.js";
 
+import {
+    BoxLineGeometry
+} from "../lib/BoxLineGeometry.js";
+import {
+    LatheGeometry
+} from "../lib/three.module.js";
 //Define basic scene objs
 var scene, camera, renderer;
 var cameraHelper;
@@ -119,7 +127,7 @@ function createScene() {
     var scene = new THREE.Scene();
     scene.name = 'scene';
     scene.autoUpdate = true;
-    scene.background = new THREE.Color('#FFFFFF');
+    scene.background = new THREE.Color('#787878');
     return scene;
 }
 
@@ -140,204 +148,178 @@ function createRenderer() {
 
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor('rgb(120, 120, 120)');
+
 
     return renderer;
 }
 
-function update(){
+function update() {
     renderer.render(
         scene,
         camera
     );
 
     orbit.update();
-    
-    requestAnimationFrame(function(){
+
+    requestAnimationFrame(function () {
         update(renderer, scene, camera, orbit);
     })
 }
 
 
 
-window.changeFOV = function(value = false) {
+window.changeFOV = function (value = false) {
     if (!value) {
         var value = document.getElementById("FOV").value;
         camera.fov = Number(value);
         camera.updateProjectionMatrix();
-    }
-    else {
+    } else {
         camera.fov = value;
         camera.updateProjectionMatrix();
     }
 }
 
-window.changeNear = function(value = false) {
-    if(!value) {
+window.changeNear = function (value = false) {
+    if (!value) {
         var value = document.getElementById("Near").value;
         camera.near = Number(value);
         camera.updateProjectionMatrix();
-    }
-    else {
+    } else {
         camera.near = value;
         camera.updateProjectionMatrix();
     }
 }
 
-window.changeFar = function(value = false) {
-    if(!value) {
+window.changeFar = function (value = false) {
+    if (!value) {
         var value = document.getElementById("Far").value;
         camera.far = Number(value);
         camera.updateProjectionMatrix();
-    }
-    else {
+    } else {
         camera.far = value;
         camera.updateProjectionMatrix();
     }
 }
 
 
-window.renderGeometry= function(id, fontName='Tahoma') {
+window.renderGeometry = function (id, fontName = 'Tahoma') {
     // Setting the main-obj geometry
 
     mesh = scene.getObjectByName('main-obj');
     scene.remove(mesh);
-    if(mesh) {
+    if (mesh) {
         gui.removeFolder(objectFolder);
     }
-    
-    if (id != 'text') {
-        mesh_geometry = getGeo(id);
-        console.log(mesh_geometry.parameters)
-        mesh_geometry.name = id;
-        if(pointMaterial) 
-            mesh = new THREE.Points(mesh_geometry, material);
-        else    
-            mesh = new THREE.Mesh(mesh_geometry, material);
-        
-        scene.add(mesh);
-        mesh.name = 'main-obj';
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        // control_transform(mesh);
-    }
-    // else {
-    //     var text = document.getElementById('insertedText').value;
-    //     loader.load( dic[fontName], 
-    //         function(font) {
-    //             mesh_geometry = new THREE.TextGeometry(text, {
-    //                 font: font,
-    //                 size: obj_params['size'],
-    //                 height: obj_params['height'],
-    //                 curveSegments: obj_params['curveSegments'],
-            
-    //                 bevelThickness: obj_params['bevelThickness'],
-    //                 bevelSize: obj_params['bevelSize'],
-    //                 bevelEnabled: obj_params['bevelEnabled'],
-    //                 bevelOffset: obj_params['bevelOffset'],
-    //                 bevelSegments: obj_params['bevelSegments']
-    //             })
-    //             mesh_geometry.name = id;
-    //             mesh_geometry.computeBoundingBox();
-    //             if(pointMaterial)
-    //                 mesh = new THREE.Points(mesh_geometry, material);
-    //             else
-    //                 mesh = new THREE.Mesh(mesh_geometry, material);
-    //             mesh.name = 'main-obj';
-    //             mesh.castShadow = true;
-    //             mesh.receiveShadow = true;
-    //             scene.add(mesh);
-    //             control_transform(mesh);
-    //         })
-    // }
-    
+
+
+    mesh_geometry = getGeo(id);
+    mesh_geometry.name = id;
+    if (pointMaterial)
+        mesh = new THREE.Points(mesh_geometry, material);
+    else
+        mesh = new THREE.Mesh(mesh_geometry, material);
+
+    scene.add(mesh);
+    mesh.name = 'main-obj';
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    // control_transform(mesh);
+
 
     //Adding GUI for control 
     objectFolder = gui.addFolder('Object');
 
     // Change mesh color
-    
-    if(id == 'text') {
-        // Let user pick font
-        objectFolder.add(obj_params, 'font', [ 'Tahoma', 'Bell', 'Broadway', 'Constantia', 'Luna', 'Roboto', 'Tahoma'])
-            .onChange(function(value) {
-                renderGeometry('text', value);
-            });
-    }
-    else {
-        objectFolder.add(mesh, 'visible');
-        if (mesh.geometry.parameters){
-            for(let i of Object.keys(mesh.geometry.parameters)) {
-                objectFolder.add(obj_params, i)
-                    .onChange(function(value) {
-                        renderGeometry(mesh_geometry.name)
-                    })
-            }
+
+    objectFolder.add(mesh, 'visible');
+    if (mesh.geometry.parameters) {
+        for (let i of Object.keys(mesh.geometry.parameters)) {
+            objectFolder.add(obj_params, i)
+                .onChange(function (value) {
+                    renderGeometry(mesh_geometry.name)
+                })
         }
     }
+
+    if (id == 'tea-pot') {
+        for (let i of Object.keys(teapot_params)) {
+            objectFolder.add(obj_params, i)
+                .onChange(function (value) {
+                    renderGeometry(mesh_geometry.name)
+                })
+        }
+    }
+
+
+    if (id == 'boxline') {
+        for (let i of Object.keys(boxline_params)) {
+            objectFolder.add(obj_params, i)
+                .onChange(function (value) {
+                    renderGeometry(mesh_geometry.name)
+                })
+        }
+    }
+
+
     objectFolder.open();
 
     // Adding controls on material type
-    if(materialFolder) {
+    if (materialFolder) {
         gui.removeFolder(materialFolder);
     }
     materialFolder = gui.addFolder('Material');
-    materialFolder.addColor( obj_material, 'color')
-        .onChange(function() {
-            mesh.material.color.set( new THREE.Color(obj_material.color) );
+    materialFolder.addColor(obj_material, 'color')
+        .onChange(function () {
+            mesh.material.color.set(new THREE.Color(obj_material.color));
             mesh.material.needsUpdate = true;
         });
-    materialFolder.add( obj_material, 'metalness', 0, 1.0)
-        .onChange(function(value) {
+    materialFolder.add(obj_material, 'metalness', 0, 1.0)
+        .onChange(function (value) {
             material.metalness = value;
             mesh.material.metalness = value;
-            mesh.material.needsUpdate=true;
+            mesh.material.needsUpdate = true;
         })
-    materialFolder.add( obj_material, 'roughness', 0, 1.0)
-    .onChange(function(value) {
-        material.roughness = value;
-        mesh.material.roughness = value;
-        mesh.material.needsUpdate=true;
-    })
-    materialFolder.add( obj_material, 'wireframe')
-        .onChange(function(value) {
+    materialFolder.add(obj_material, 'roughness', 0, 1.0)
+        .onChange(function (value) {
+            material.roughness = value;
+            mesh.material.roughness = value;
+            mesh.material.needsUpdate = true;
+        })
+    materialFolder.add(obj_material, 'wireframe')
+        .onChange(function (value) {
             material.wireframe = value;
             mesh.material.wireframe = value;
             mesh.material.needsUpdate = true;
         });
-    materialFolder.add( obj_material, 'refractionRatio', 0, 1.0)
-        .onChange(function(value) {
+    materialFolder.add(obj_material, 'refractionRatio', 0, 1.0)
+        .onChange(function (value) {
             material.refractionRatio = value;
             mesh.material.refractionRatio = value;
             mesh.material.needsUpdate = true;
- 
+
         });
-    materialFolder.add( obj_material, 'metalTexture', [ 'rose gold', 'gold', 'alu' ])
-        .onChange(function(value) {
+    materialFolder.add(obj_material, 'metalTexture', ['rose gold', 'gold', 'alu'])
+        .onChange(function (value) {
             var url = metalTextureDic[value][0];
             metalColor = metalTextureDic[value][1];
             setMetalColor = true;
             setTexture(url, 'main-obj', true);
         })
 
-    materialFolder.add(material, 'flatShading')
-        .onChange(function(value) {
-            mesh.material.flatShading = value;
-            mesh.material.needsUpdate = true;
-        })
-    
     materialFolder.open();
 
     // render();
 }
 
 function getGeo(id) {
-    switch(id) {
+    switch (id) {
         case 'box':
             return new THREE.BoxGeometry(obj_params['width'], obj_params['height'], obj_params['depth'], obj_params['widthSegments'], obj_params['heightSegments'], obj_params['depthSegments'])
 
         case 'sphere':
             return new THREE.SphereGeometry(obj_params['radius'], obj_params['widthSegments'], obj_params['heightSegments']);
-        
+
         case 'cone':
             return new THREE.ConeGeometry(obj_params['radius'], obj_params['height'], obj_params['radialSegments'], obj_params['heightSegments']);
 
@@ -349,31 +331,23 @@ function getGeo(id) {
 
         case 'tea-pot':
             return new TeapotGeometry(obj_params['size'], obj_params['segments'])
-        
-        case 'icosa':
-            return new THREE.IcosahedronGeometry(obj_params['radius'], obj_params['detail'])
-
-        case 'dode':
-            return new THREE.DodecahedronGeometry(obj_params['radius'], obj_params['detail'])
-        
         case 'octa':
             return new THREE.OctahedronGeometry(obj_params['radius'], obj_params['detail'])
 
         case 'tetra':
             return new THREE.TetrahedronGeometry(obj_params['radius'], obj_params['detail'])
-
-        case 'circle':
-            return new THREE.CircleGeometry(obj_params['radius'], obj_params['segments'])
+        case 'boxline':
+            return new BoxLineGeometry(obj_params['width'], obj_params['height'], obj_params['depth'], obj_params['widthSegments'], obj_params['heightSegments']);
     }
 }
 
-window.setMaterial = function(mat='point', obj='main-obj',color=0xffffff, size=3, wireframe=true, transparent=true) {
+window.setMaterial = function (mat = 'point', obj = 'main-obj', color = 0xffffff, size = 3, wireframe = true, transparent = true) {
     // Getting the current main-obj on screen and setting it with the chosen material 
     type_material = mat;
     light = scene.getObjectByName('light');
     color = new THREE.Color(color);
 
-    if(obj == 'main-obj') {
+    if (obj == 'main-obj') {
         // If this is setMaterial for main-obj
         mesh = scene.getObjectByName('main-obj');
 
@@ -381,83 +355,129 @@ window.setMaterial = function(mat='point', obj='main-obj',color=0xffffff, size=3
             var dummy_mesh = mesh.clone();
             scene.remove(mesh);
 
-            switch(type_material) {
+            switch (type_material) {
                 case 'standard':
-                    material = new THREE.MeshStandardMaterial({ color: obj_material['color'], side: obj_material['side'] });
+                    material = new THREE.MeshStandardMaterial({
+                        color: obj_material['color'],
+                        side: obj_material['side']
+                    });
                     pointMaterial = false;
                     break;
                 case 'point':
-                    material = new THREE.PointsMaterial({ size: obj_material['size'], vertexColors: true, side: obj_material['side'], color: obj_material['color']});
+                    material = new THREE.PointsMaterial({
+                        size: obj_material['size'],
+                        vertexColors: true,
+                        side: obj_material['side'],
+                        color: obj_material['color']
+                    });
                     pointMaterial = true;
                     break;
 
                 case 'wireframe':
-                    material = new THREE.MeshStandardMaterial({ color: obj_material['color'], wireframe: true, side: obj_material['side']});
+                    material = new THREE.MeshStandardMaterial({
+                        color: obj_material['color'],
+                        wireframe: true,
+                        side: obj_material['side']
+                    });
                     obj_material['wireframe'] = true;
                     pointMaterial = false;
                     break;
 
                 case 'normal':
-                    material = new THREE.MeshNormalMaterial({ color: obj_material['color'], side: obj_material['side']});
+                    material = new THREE.MeshNormalMaterial({
+                        color: obj_material['color'],
+                        side: obj_material['side']
+                    });
 
                 case 'phong':
-                    material = new THREE.MeshPhongMaterial({color: obj_material['color'], side: obj_material['side']});
+                    material = new THREE.MeshPhongMaterial({
+                        color: obj_material['color'],
+                        side: obj_material['side']
+                    });
                     pointMaterial = false;
                     break;
                 case 'basic':
-                    material = new THREE.MeshBasicMaterial({ color: obj_material['color'], side: obj_material['side']});
+                    material = new THREE.MeshBasicMaterial({
+                        color: obj_material['color'],
+                        side: obj_material['side']
+                    });
                     pointMaterial = false;
                     break;
 
                 case 'lambert':
-                    if (!light) 
-                        material = new THREE.MeshBasicMaterial({map: texture,  color: obj_material['color'], side: obj_material['side'] });
+                    if (!light)
+                        material = new THREE.MeshBasicMaterial({
+                            map: texture,
+                            color: obj_material['color'],
+                            side: obj_material['side']
+                        });
                     else
-                        material = new THREE.MeshLambertMaterial({map: texture, color: obj_material['color'], side: obj_material['side']});
+                        material = new THREE.MeshLambertMaterial({
+                            map: texture,
+                            color: obj_material['color'],
+                            side: obj_material['side']
+                        });
                     pointMaterial = false;
                     break;
                 case 'metal':
-                    if(!setMetalColor) {
-                        material = new THREE.MeshPhysicalMaterial({color: obj_material['color'], roughness:0 ,metalness:1, side: obj_material['side']});
-                    }
-                    else {
-                        material = new THREE.MeshPhysicalMaterial({color: metalColor, roughness:0 ,metalness:1, side: obj_material['side']});
+                    if (!setMetalColor) {
+                        material = new THREE.MeshPhysicalMaterial({
+                            color: obj_material['color'],
+                            roughness: 0,
+                            metalness: 1,
+                            side: obj_material['side']
+                        });
+                    } else {
+                        material = new THREE.MeshPhysicalMaterial({
+                            color: metalColor,
+                            roughness: 0,
+                            metalness: 1,
+                            side: obj_material['side']
+                        });
                         setMetalColor = false;
                     }
-                        
+
                     material.metalnessMap = texture;
                     material.roughnessMap = texture;
                     material.envMap = envMap;
                     material.envMapIntensity = 1;
                     break;
                 default:
-                    material = new THREE.MeshPhongMaterial({ color: obj_material['color'], side: obj_material['side'] });
+                    material = new THREE.MeshPhongMaterial({
+                        color: obj_material['color'],
+                        side: obj_material['side']
+                    });
 
             }
 
-            if(mat == 'point') {
+            if (mat == 'point') {
                 mesh = new THREE.Points(dummy_mesh.geometry, material);
-            }
-            else {
+            } else {
                 mesh = new THREE.Mesh(dummy_mesh.geometry, material);
             }
             CloneMesh(dummy_mesh);
             update();
-        
+
         }
-    }
-    else if (obj == 'plane') {
+    } else if (obj == 'plane') {
         meshPlane = scene.getObjectByName('plane');
-        if(plane) {
+        if (plane) {
             var dummy_plane = meshPlane.clone();
             scene.remove(meshPlane);
 
-            switch(type_material) {
+            switch (type_material) {
                 case 'lambert':
-                    planeMaterial = new THREE.MeshLambertMaterial({map: texture, color: color, side: THREE.DoubleSide});
+                    planeMaterial = new THREE.MeshLambertMaterial({
+                        map: texture,
+                        color: color,
+                        side: THREE.DoubleSide
+                    });
                     break;
                 default:
-                    planeMaterial = new THREE.MeshPhongMaterial({ color: color, side: THREE.DoubleSide });
+                    planeMaterial = new THREE.MeshPhongMaterial({
+                        color: color,
+                        side: THREE.DoubleSide
+                    });
             }
             meshPlane = new THREE.Mesh(PlaneGeometry, planeMaterial);
             CloneMesh(dummy_plane, meshPlane);
@@ -465,15 +485,167 @@ window.setMaterial = function(mat='point', obj='main-obj',color=0xffffff, size=3
     }
 }
 
-function CloneMesh(dummy_mesh, obj=mesh) {
+function CloneMesh(dummy_mesh, obj = mesh) {
     // Inherit all name, position and animation that is currently on the old mesh 
     // Put it on the new one
     obj.name = dummy_mesh.name;
     obj.position.set(dummy_mesh.position.x, dummy_mesh.position.y, dummy_mesh.position.z);
     obj.rotation.set(dummy_mesh.rotation.x, dummy_mesh.rotation.y, dummy_mesh.rotation.z);
     obj.scale.set(dummy_mesh.scale.x, dummy_mesh.scale.y, dummy_mesh.scale.z);
-	obj.castShadow = true;
-	obj.receiveShadow = true;
+    obj.castShadow = true;
+    obj.receiveShadow = true;
     scene.add(obj);
     // control_transform(obj);
+}
+
+
+//Point Lights
+
+function createPointLight(color = 0xffffff, intensity = 2, name = 'light') {
+    var light = new THREE.PointLight(new THREE.Color(color), intensity);
+    light.castShadow = true;
+    light.position.set(0, 250, 0);
+
+    light.name = name;
+
+    return light
+}
+
+var pLight_params = {
+    color: 0xffffff,
+    decay: 1,
+    intensity: 2
+}
+
+window.setPointLight = function () {
+    light = scene.getObjectByName('light');
+
+    if (light)
+        removeLight();
+
+    light = createPointLight();
+    scene.add(light);
+    // control_transform(light);
+
+    PointLightHelper = new THREE.PointLightHelper(light);
+    PointLightHelper.name = 'pointlight-helper';
+    scene.add(PointLightHelper);
+
+    PLightFolder = gui.addFolder('PointLight');
+    PLightFolder.addColor(pLight_params, 'color')
+        .onChange(function () {
+            light.color.set(new THREE.Color(pLight_params.color))
+        })
+    PLightFolder.add(light, 'intensity', 0, 10)
+        .onChange(function (value) {
+            light.intensity = value;
+        })
+    // render();
+
+}
+
+window.removeLight = function () {
+
+
+    // Remove light folder
+    for (let [key, value] of Object.entries(gui.__folders)) {
+        if (value.name == 'PointLight' || value.name == 'SpotLight') {
+            gui.removeFolder(value);
+        }
+    }
+
+    // Remove helper from scene
+    for (let i of scene.children) {
+        if (i.name == 'spotlight-helper' || i.name == 'pointlight-helper') {
+            scene.remove(i)
+        }
+    }
+
+    // Remove light
+    scene.remove(light);
+
+    // render();
+}
+
+// SpotLightHelper Light
+var sLight_params = {
+    color: 0xffffff,
+    intensity: 2
+}
+
+function createSpotLight(color = 0xffffff, intensity = 2, decay = 1, name = 'light') {
+    var light = new THREE.SpotLight(new THREE.Color(color), intensity = intensity);
+    light.castShadow = true;
+    light.position.set(0, 250, 0);
+    light.name = name;
+
+    return light;
+}
+
+window.setSpotLight = function () {
+    light = scene.getObjectByName('light');
+
+    if (light)
+        removeLight();
+
+    console.log(gui);
+
+    light = createSpotLight();
+    scene.add(light);
+    // control_transform(light);
+
+    SpotLightHelper = new THREE.SpotLightHelper(light);
+    SpotLightHelper.name = 'spotlight-helper';
+    scene.add(SpotLightHelper);
+
+    SLightFolder = gui.addFolder('SpotLight');
+    SLightFolder.addColor(sLight_params, 'color')
+        .onChange(function () {
+            light.color.set(new THREE.Color(sLight_params.color))
+        })
+    SLightFolder.add(light, 'intensity', 0, 10)
+        .onChange(function (value) {
+            light.intensity = value;
+        });
+    // render();
+
+}
+
+//Ambient Light
+var AMBDefault = {
+    color: 0x404040,
+}
+
+function createAmbientLight(color = 0x404040, intensity = 5) {
+    var name = 'ambient-light';
+    ambientLight = new THREE.AmbientLight(color, intensity);
+    ambientLight.name = name;
+    return ambientLight
+}
+
+window.setAmbientLight = function () {
+    ambientLight = createAmbientLight();
+    scene.add(ambientLight);
+
+    AMBLightFolder = gui.addFolder('Ambient Light');
+    AMBLightFolder.addColor(AMBDefault, 'color')
+        .onChange(function () {
+            ambientLight.color.set(new THREE.Color(AMBDefault.color));
+        })
+}
+
+window.removeAmbientLight = function () {
+    gui.removeFolder(AMBLightFolder);
+    scene.remove(ambientLight);
+}
+
+window.displayAmbient = function () {
+    var checked = document.querySelector('input[id="ambient"]:checked');
+    if (checked) {
+        console.log('Turn on ambient');
+        setAmbientLight();
+    } else {
+        console.log("Turn off ambient");
+        removeAmbientLight();
+    }
 }

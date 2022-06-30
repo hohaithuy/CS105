@@ -78,7 +78,19 @@
 					</ul>
 				</li>
 				<li>
-					<a href="#">About</a>
+					<a href="#lightSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Add
+						Light</a>
+					<ul class="collapse list-unstyled" id="lightSubmenu">
+						<li>
+							<a href="#" onclick="setPointLight()">Point Light</a>
+						</li>
+						<li>
+							<a href="#" onclick="setSpotLight()">Spot Light</a>
+						</li>
+						<li>
+							<a href="#" onclick="removeLight()">Remove Light</a>
+						</li>
+					</ul>
 				</li>
 				<li>
 					<a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
@@ -103,19 +115,13 @@
 							<a href="#" onclick="renderGeometry('tea-pot');">Teapot</a>
 						</li>
 						<li>
-							<a href="#" onclick="renderGeometry('icosa');">Icosahedron</a>
-						</li>
-						<li>
-							<a href="#" onclick="renderGeometry('dode');">Dodecahedron</a>
+							<a href="#" onclick="renderGeometry('tetra');">Tetrahedron</a>
 						</li>
 						<li>
 							<a href="#" onclick="renderGeometry('octa');">Octahedron</a>
 						</li>
 						<li>
-							<a href="#" onclick="renderGeometry('tetra');">Tetrahedron</a>
-						</li>
-						<li>
-							<a href="#" onclick="renderGeometry('circle');">Circle</a>
+							<a href="#" onclick="renderGeometry('boxline');">BoxLine</a>
 						</li>
 					</ul>
 				</li>
@@ -133,11 +139,13 @@
 							<a href="#" onclick="setMaterial('wireframe');">Wireframe</a>
 						</li>
 						<li>
-							<a href="#" onclick="setMaterial('basic');">Solid</a>
+							<a href="#" onclick="setMaterial('phong');">Phong</a>
 						</li>
 						<li>
-							<a href="#" onClick='uploadImage("texture-obj");'>Special Texture</a>     
-							<input type='file' accept="image/*" id='texture-obj' style='display:none;' onChange="setTexture(window.URL.createObjectURL(this.files[0]))"/> 
+							<a href="#" onclick="setMaterial('metal');">Metal</a>
+						</li>
+						<li>
+							<a href="#" onclick="setMaterial('basic');">Solid</a>
 						</li>
 					</ul>
 				</li>
