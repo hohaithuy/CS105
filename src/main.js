@@ -14,14 +14,8 @@ import {
 var scene, camera, renderer;
 var cameraHelper;
 var mesh, texture;
-var material = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
-    side: THREE.DoubleSide
-});
-var defaultMaterial = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
-    side: THREE.DoubleSide
-});
+var material = getMaterial('standard', 'rgb(255, 255, 255)');
+
 var pointMaterial = false;
 var specialMaterial, preMaterial = false,
     isBuffer = false;
@@ -29,8 +23,6 @@ var backgroundTexture;
 var planeMaterial;
 var time = 0,
     delta = 0;
-var metalColor = new THREE.Color('#BBA14F');
-var setMetalColor = false;
 
 material.needsUpdate = true;
 
@@ -277,7 +269,7 @@ window.renderGeometry = function (id, fontName = 'Tahoma') {
     }
     materialFolder = gui.addFolder('Material');
     materialFolder.addColor(obj_material, 'color')
-        .onChange(function () {
+        .onChange(function (value) {
             mesh.material.color.set(new THREE.Color(obj_material.color));
             mesh.material.needsUpdate = true;
         });
@@ -306,13 +298,12 @@ window.renderGeometry = function (id, fontName = 'Tahoma') {
             mesh.material.needsUpdate = true;
 
         });
-    // materialFolder.add(obj_material, 'metalTexture', ['rose gold', 'gold', 'alu'])
-    //     .onChange(function (value) {
-    //         var url = metalTextureDic[value][0];
-    //         metalColor = metalTextureDic[value][1];
-    //         setMetalColor = true;
-    //         setTexture(url, 'main-obj', true);
-    //     })
+        console.log("asdasdad")
+    materialFolder.add(obj_material, 'metalTexture', ['metal', 'rock'])
+        .onChange(function (value) {   
+
+            setTexture(value, 'main-obj');
+        })
 
     materialFolder.open();
 
@@ -348,7 +339,7 @@ function getGeo(id) {
     }
 }
 
-window.setMaterial = function (mat = 'point', obj = 'main-obj', color = 0xffffff, size = 3, wireframe = true, transparent = true) {
+window.setMaterial = function (mat = 'point', obj = 'main-obj', color = '#B6371C', size = 3, wireframe = true, transparent = true) {
     // Getting the current main-obj on screen and setting it with the chosen material 
     type_material = mat;
     light = scene.getObjectByName('light');
@@ -395,14 +386,6 @@ window.setMaterial = function (mat = 'point', obj = 'main-obj', color = 0xffffff
                         color: obj_material['color'],
                         side: obj_material['side']
                     });
-
-                case 'phong':
-                    material = new THREE.MeshPhongMaterial({
-                        color: obj_material['color'],
-                        side: obj_material['side']
-                    });
-                    pointMaterial = false;
-                    break;
                 case 'basic':
                     material = new THREE.MeshBasicMaterial({
                         color: obj_material['color'],
@@ -410,47 +393,8 @@ window.setMaterial = function (mat = 'point', obj = 'main-obj', color = 0xffffff
                     });
                     pointMaterial = false;
                     break;
-
-                case 'lambert':
-                    if (!light)
-                        material = new THREE.MeshBasicMaterial({
-                            map: texture,
-                            color: obj_material['color'],
-                            side: obj_material['side']
-                        });
-                    else
-                        material = new THREE.MeshLambertMaterial({
-                            map: texture,
-                            color: obj_material['color'],
-                            side: obj_material['side']
-                        });
-                    pointMaterial = false;
-                    break;
-                case 'metal':
-                    if (!setMetalColor) {
-                        material = new THREE.MeshPhysicalMaterial({
-                            color: obj_material['color'],
-                            roughness: 0,
-                            metalness: 1,
-                            side: obj_material['side']
-                        });
-                    } else {
-                        material = new THREE.MeshPhysicalMaterial({
-                            color: metalColor,
-                            roughness: 0,
-                            metalness: 1,
-                            side: obj_material['side']
-                        });
-                        setMetalColor = false;
-                    }
-
-                    material.metalnessMap = texture;
-                    material.roughnessMap = texture;
-                    material.envMap = envMap;
-                    material.envMapIntensity = 1;
-                    break;
                 default:
-                    material = new THREE.MeshPhongMaterial({
+                    material = new THREE.MeshStandardMaterial({
                         color: obj_material['color'],
                         side: obj_material['side']
                     });
@@ -552,6 +496,8 @@ window.setPointLight = function () {
         PLightFolder.add(light.position, 'x', 0, 20)
         PLightFolder.add(light.position, 'y', 0, 20)
         PLightFolder.add(light.position, 'z', 0, 20)
+        PLightFolder.add(light, 'castShadow');
+
     // render();
 
 }
@@ -632,6 +578,9 @@ window.setSpotLight = function () {
             light.intensity = value;
         });
 
+    SLightFolder.add(light.position, 'x', 0, 20)
+    SLightFolder.add(light.position, 'y', 0, 20)
+    SLightFolder.add(light.position, 'z', 0, 20)
     SLightFolder.add(light, 'castShadow');
     SLightFolder.open();
 
@@ -793,3 +742,66 @@ function addTexttoHeader(text = 'Hello Word', id='auxiliary'){
             already.appendChild(element)
         }
 }
+
+var metalTextureDic = {
+    "metal": { map: '../assets/Metal_006_SD-20220630T113315Z-001/Metal_006_SD/Material_2079.jpg', 
+    roughnessMap: '../assets/Metal_006_SD-20220630T113315Z-001/Metal_006_SD/Metal_006_roughness.jpg',
+    color: '#D0D5DB'},
+    "rock": ['./graphics/textures/alu.jpg', '#D0D5DB'],
+    "gold": ['./graphics/textures/gold.jpg', '#BBA14F'],
+}
+
+window.setTexture = function(value, obj='main-obj') {
+    mesh = scene.getObjectByName('main-obj');
+    meshPlane = scene.getObjectByName('plane');
+    if(obj == 'main-obj') {  
+        if(mesh) {
+            var loader = new THREE.TextureLoader();
+            material.map = loader.load(metalTextureDic[obj].map);
+            console.log(metalTextureDic[value].map)
+            // material.bumpMap = loader.load('./assets/conce.jpg');
+            material.roughnessMap = loader.load('./assets/conce.jpg');
+            material.metalness = 0.1;
+            material.bumScale = 0.01;
+            material.roughness = 0.7;
+        }
+    }
+    if(obj == 'plane') {
+        if(plane) {
+            texture = new THREE.TextureLoader().load(url, render);
+            texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            setMaterial('lambert', obj=obj);
+        }
+    }
+    if(obj == 'background') {
+        backgroundTexture = new THREE.TextureLoader();
+        backgroundTexture.load(url, function(texture) {
+            scene.background = texture;
+        })
+    }
+}
+
+
+function getMaterial(type, color) {
+    var selectedMaterial;
+    var materialOptions = {
+        color: color === undefined ? 'rgb(255, 255, 255)' : color,
+        side: THREE.DoubleSide,
+    }
+    switch (type) {
+        case 'basic':
+            selectedMaterial = new THREE.MeshBasicMaterial(materialOptions);
+            break;
+        case 'lambert':
+            selectedMaterial = new THREE.MeshLambertMaterial(materialOptions);
+            break;
+        case 'phong':
+            selectedMaterial = new THREE.MeshPhongMaterial(materialOptions);
+            break;
+        case 'standard':
+            selectedMaterial = new THREE.MeshStandardMaterial(materialOptions);
+            break;
+    }
+    return selectedMaterial;
+}
+

@@ -1,196 +1,192 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-	<meta charset="utf-8">
-	<title>Đồ án CS105</title>
-	<style>
+	<head>
+		<meta charset="utf-8">
+		<title>Đồ án CS105</title>
+		<style>
 		body {
 			margin: 0;
 		}
 	</style>
 
-	<!-- <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css'> -->
-
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-		integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
-	</script>
-	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
-	</script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-		integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
-	</script>
-
-
-
-
-	<link rel='stylesheet'
-		href='https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css'>
-	<link rel="stylesheet" href="./style.css">
-
-</head>
-
-<body>
-
-	<script src="./lib/three.js"></script>
-	<script src="./lib/OrbitControls.js"></script>
-	<script src="./lib/dat.gui.min.js"></script>
-	<script type="module" src="./lib/TransformControls.js"></script>
-
-	<script type='module' src="./lib/TeapotGeometry.js"></script>
+		<!-- <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css'> -->
+		<link rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+			integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+			crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+			integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+			crossorigin="anonymous">
+		</script>
+		<script
+			src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+			integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+			crossorigin="anonymous">
+		</script>
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+			integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+			crossorigin="anonymous">
+		</script>
 
 
 
-	<script src="./src/config.js"></script>
-	<script src="./src/params.js"></script>
 
-	<div id='webgl'>
-		<script type='module' src='./src/main.js'></script>
-	</div>
+		<link rel='stylesheet'
+			href='https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css'>
+		<link rel="stylesheet" href="./style.css">
+
+	</head>
+
+	<body>
+
+		<script src="./lib/three.js"></script>
+		<script src="./lib/OrbitControls.js"></script>
+		<script src="./lib/dat.gui.min.js"></script>
+		<script type="module" src="./lib/TransformControls.js"></script>
+
+		<script type='module' src="./lib/TeapotGeometry.js"></script>
 
 
 
-	<!-- <script src="./src/main-backup.js"></script> -->
-	<div id='nothing'></div>
-	<div id='auxiliary'></div>
+		<script src="./src/config.js"></script>
+		<script src="./src/params.js"></script>
 
-	<div class="wrapper">
-		<!-- Sidebar  -->
-		<nav id="sidebar">
-			<div class="sidebar-header">
-				<h3>CS105 - Computer Graphics</h3>
-			</div>
+		<div id='webgl'>
+			<script type='module' src='./src/main.js'></script>
+		</div>
 
-			<ul class="list-unstyled components">
-				<p>Đồ án môn học</p>
-				<li class="active">
-					<a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Add
-						Scene</a>
-					<ul class="collapse list-unstyled" id="homeSubmenu">
-						<li>
-							<a href="#">Home 1</a>
-						</li>
-						<li>
-							<a href="#">Home 2</a>
-						</li>
-						<li>
-							<a href="#">Home 3</a>
-						</li>
-					</ul>
-				</li>
 
-				<li class="active">
-					<input type='checkbox'  id='plane' value='plane' name='plane' onchange="displayPlane()"/>
-					<label for='plane'>Plane</label>
-					<input type='file' accept="image/*" id='texture-plane' style='display:none;' onChange="setTexture(window.URL.createObjectURL(this.files[0]),'plane')"/> 
-					<div class='plane-texture' onClick='uploadImage("texture-plane")'>Set Plane Texture</div>
-				</li>
-				<li data-toggle="collapse" aria-expanded="false">
-					<input type='checkbox' id='ambient' value='ambient' name='ambient' onchange="displayAmbient()"/>
-					<label for='ambient'>Ambient Light</label>
-				</li>
-				
-				<li>
-					<a href="#lightSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Add
-						Light</a>
-					<ul class="collapse list-unstyled" id="lightSubmenu">
-						<li>
-							<a href="#" onclick="setPointLight()">Point Light</a>
-						</li>
-						<li>
-							<a href="#" onclick="setSpotLight()">Spot Light</a>
-						</li>
-						<li>
-							<a href="#" onclick="removeLight()">Remove Light</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
-						class="dropdown-toggle">Shape</a>
-					<ul class="collapse list-unstyled" id="pageSubmenu">
-						<li>
-							<a href="#" onclick="renderGeometry('box');">Cube</a>
-						</li>
-						<li>
-							<a href="#" onclick="renderGeometry('sphere');">Sphere</a>
-						</li>
-						<li>
-							<a href="#" onclick="renderGeometry('cone');">Cone</a>
-						</li>
-						<li>
-							<a href="#" onclick="renderGeometry('cylinder');">Cylinder</a>
-						</li>
-						<li>
-							<a href="#" onclick="renderGeometry('torus');">Torus</a>
-						</li>
-						<li>
-							<a href="#" onclick="renderGeometry('tea-pot');">Teapot</a>
-						</li>
-						<li>
-							<a href="#" onclick="renderGeometry('tetra');">Tetrahedron</a>
-						</li>
-						<li>
-							<a href="#" onclick="renderGeometry('octa');">Octahedron</a>
-						</li>
-						<li>
-							<a href="#" onclick="renderGeometry('boxline');">BoxLine</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="#testSubmenu" data-toggle="collapse" aria-expanded="false"
-						class="dropdown-toggle">Surface</a>
-					<ul class="collapse list-unstyled" id="testSubmenu">
-						<li>
-							<a href="#" onclick="setMaterial('standard');">Standard</a>
-						</li>
-						<li>
-							<a href="#" onclick="setMaterial('point');">Point</a>
-						</li>
-						<li>
-							<a href="#" onclick="setMaterial('wireframe');">Wireframe</a>
-						</li>
-						<li>
-							<a href="#" onclick="setMaterial('phong');">Phong</a>
-						</li>
-						<li>
-							<a href="#" onclick="setMaterial('metal');">Metal</a>
-						</li>
-						<li>
-							<a href="#" onclick="setMaterial('basic');">Solid</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="#">Animation</a>
-				</li>
-				<li>
-					<a href="#">Contact</a>
-				</li>
-			</ul>
 
-			<ul class="list-unstyled CTAs">
-				<li>
-					<a href="https://bootstrapious.com/tutorial/files/sidebar.zip" class="download">Download source</a>
-				</li>
-				<li>
-					<a href="https://bootstrapious.com/p/bootstrap-sidebar" class="article">Back to article</a>
-				</li>
-			</ul>
-		</nav>
+		<!-- <script src="./src/main-backup.js"></script> -->
+		<div id='nothing'></div>
+		<div id='auxiliary'></div>
 
-		<!-- Page Content  -->
+		<div class="wrapper">
+			<!-- Sidebar  -->
+			<nav id="sidebar">
+				<div class="sidebar-header">
+					<h3>CS105 - Computer Graphics</h3>
+				</div>
 
-	</div>
+				<ul class="list-unstyled components">
+					<p>Đồ án môn học</p>
+					<li class="active">
+						<a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"
+							class="dropdown-toggle">Add
+							environment</a>
+						<ul class="collapse list-unstyled" id="homeSubmenu">
+							<li class="active">
+								<a href="#"> <input type='checkbox' id='plane' value='plane'
+										name='plane'
+										onchange="displayPlane()" />
+									<label for='plane'>Plane</label>
+								</a>
+							</li>
+							<li data-toggle="collapse" aria-expanded="false">
+								<a href="#"> <input type='checkbox' id='ambient' value='ambient'
+										name='ambient'
+										onchange="displayAmbient()" />
+									<label for='ambient'>Ambient Light</label></a>
+							</li>
+						</ul>
+					</li>
+					<li>
+						<a href="#lightSubmenu" data-toggle="collapse" aria-expanded="false"
+							class="dropdown-toggle">Add
+							Light</a>
+						<ul class="collapse list-unstyled" id="lightSubmenu">
+							<li>
+								<a href="#" onclick="setPointLight()">Point Light</a>
+							</li>
+							<li>
+								<a href="#" onclick="setSpotLight()">Spot Light</a>
+							</li>
+							<li>
+								<a href="#" onclick="removeLight()">Remove Light</a>
+							</li>
+						</ul>
+					</li>
+					<li>
+						<a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
+							class="dropdown-toggle">Shape</a>
+						<ul class="collapse list-unstyled" id="pageSubmenu">
+							<li>
+								<a href="#" onclick="renderGeometry('box');">Cube</a>
+							</li>
+							<li>
+								<a href="#" onclick="renderGeometry('sphere');">Sphere</a>
+							</li>
+							<li>
+								<a href="#" onclick="renderGeometry('cone');">Cone</a>
+							</li>
+							<li>
+								<a href="#" onclick="renderGeometry('cylinder');">Cylinder</a>
+							</li>
+							<li>
+								<a href="#" onclick="renderGeometry('torus');">Torus</a>
+							</li>
+							<li>
+								<a href="#" onclick="renderGeometry('tea-pot');">Teapot</a>
+							</li>
+							<li>
+								<a href="#" onclick="renderGeometry('tetra');">Tetrahedron</a>
+							</li>
+							<li>
+								<a href="#" onclick="renderGeometry('octa');">Octahedron</a>
+							</li>
+							<li>
+								<a href="#" onclick="renderGeometry('boxline');">BoxLine</a>
+							</li>
+						</ul>
+					</li>
+					<li>
+						<a href="#testSubmenu" data-toggle="collapse" aria-expanded="false"
+							class="dropdown-toggle">Surface</a>
+						<ul class="collapse list-unstyled" id="testSubmenu">
+							<li>
+								<a href="#" onclick="setMaterial('standard');">Standard</a>
+							</li>
+							<li>
+								<a href="#" onclick="setMaterial('point');">Point</a>
+							</li>
+							<li>
+								<a href="#" onclick="setMaterial('wireframe');">Wireframe</a>
+							</li>
+							<li>
+								<a href="#" onclick="setMaterial('basic');">Solid</a>
+							</li>
+						</ul>
+					</li>
+					<li>
+						<a href="#">Animation</a>
+					</li>
+					<li>
+						<a href="#">Contact</a>
+					</li>
+				</ul>
+
+				<ul class="list-unstyled CTAs">
+					<li>
+						<a href="https://bootstrapious.com/tutorial/files/sidebar.zip"
+							class="download">Download source</a>
+					</li>
+					<li>
+						<a href="https://bootstrapious.com/p/bootstrap-sidebar" class="article">Back
+							to article</a>
+					</li>
+				</ul>
+			</nav>
+
+			<!-- Page Content  -->
+
+		</div>
 
 
 
 
 
-</body>
+	</body>
 
 </html>
